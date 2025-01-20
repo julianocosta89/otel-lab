@@ -1,0 +1,91 @@
+networks:
+  default:
+    name: otel-lab
+    driver: bridge
+
+services:
+  weather:
+    build:
+      context: ./src/weather
+    ports:
+      - 8080:8080
+    environment:
+      - WEATHER_PORT=8080
+      - FORECAST_URL=http://forecast:9090/forecast?
+      - COORDINATES_SERVICE_URL=https://nominatim.openstreetmap.org/search?format=json&q=
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_PYTHON_LOG_CORRELATION=true
+      - OTEL_SERVICE_NAME=weather
+      - POSTGRES_HOST=coordinates-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PWD=password
+      - POSTGRES_DB=coordinates
+
+  forecast:
+    build:
+      context: ./src/forecast
+    ports:
+      - 9090
+    environment:
+      - FORECAST_PORT=9090
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - OTEL_SERVICE_NAME=forecast
+
+  coordinates-db:
+    image: postgres:17.2-alpine3.21
+    ports:
+      - 5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=coordinates
+    volumes:
+      - ./src/coordinates-db/init-coordinates-db.sh:/docker-entrypoint-initdb.d/init-coordinates-db.sh
+
+  ########################
+  # TELEMETRY COMPONENTS #
+  ########################
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.117.0
+    command: 
+      - --config=/etc/otel-collector-config.yaml
+      - --feature-gates=receiver.postgresql.connectionPool,receiver.postgresql.separateSchemaAttr
+    volumes:
+      - ./src/otel-collector/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - 4317 # OTLP gRPC
+      - 4318 # OTLP HTTP
+    environment:
+      - OTEL_COLLECTOR_HOST=otel-collector
+      - OTEL_COLLECTOR_PORT_GRPC=4317
+      - OTEL_COLLECTOR_PORT_HTTP=4318
+      - POSTGRES_HOST=coordinates-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PWD=password
+      - POSTGRES_DB=coordinates
+    depends_on:
+      aspire-dashboard:
+        condition: service_started
+      coordinates-db:
+        condition: service_started
+      jaeger:
+        condition: service_started
+
+  jaeger:
+    image: jaegertracing/jaeger:2.2.0
+    ports:
+      - 16686:16686 # Jaeger UI
+      - 4317        # OTLP gRPC endpoint
+      - 4318        # OTLP HTTP endpoint
+
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:9.0
+    ports:
+      - 18888:18888
+      - 18889      # Aspire OTLP/gRPC
+      - 18890      # Aspire OTLP/HTTP
+    environment:
+      - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true

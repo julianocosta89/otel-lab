@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Multiple Cities Found</title>
+</head>
+<style>
+    body {
+        text-align: center;
+    }
+</style>
+<body>
+    <h1>Multiple Cities Found</h1>
+    <p>Please choose one of the following cities:</p>
+    <ul>
+        {% for city in cities %}
+        <li>
+            <a href="{{ city.link }}">{{ city.name }}</a> ({{ city.country }})
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
