@@ -3,20 +3,13 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"os/signal"
-	"time"
 
 	log "github.com/sirupsen/logrus"
-
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"go.opentelemetry.io/contrib/instrumentation/runtime"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type ForecastResponse struct {
@@ -45,7 +38,7 @@ func getForecast(latitude, longitude string, ctx context.Context) (*ForecastResp
 	url := fmt.Sprintf("https://api.open-meteo.com/v1/forecast?daily=temperature_2m_max,temperature_2m_min,daylight_duration&timezone=Europe%%2FBerlin&forecast_days=1&latitude=%s&longitude=%s", latitude, longitude)
 	log.WithContext(ctx).Infof("Getting forecast from %s", url)
 
-	client := http.Client{Transport: otelhttp.NewTransport(http.DefaultTransport)}
+	client := http.Client{}
 	req, _ := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 
 	resp, err := client.Do(req)
@@ -80,22 +73,12 @@ func forecastHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	span := trace.SpanFromContext(r.Context())
-
-	span.SetAttributes(
-		attribute.String("latitude", latitude),
-		attribute.String("longitude", longitude),
-	)
-
 	forecast, err := getForecast(latitude, longitude, r.Context())
 	if err != nil {
 		log.Printf("failed to get forecast: %s", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	msg := fmt.Sprintf("Elevation Found: %.2f", forecast.Elevation)
-	span.AddEvent(msg)
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(forecast); err != nil {
@@ -106,27 +89,13 @@ func forecastHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Handle SIGINT (CTRL+C) gracefully.
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	_, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
-	// Set up OpenTelemetry.
-	otelShutdown, err := setupOTelSDK(ctx)
-	if err != nil {
-		return
-	}
-	// Handle shutdown properly so nothing leaks.
-	defer func() {
-		err = errors.Join(err, otelShutdown(context.Background()))
-	}()
-
-	err = runtime.Start(runtime.WithMinimumReadMemStatsInterval(time.Second))
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	log.SetFormatter(&log.JSONFormatter{})
 
-	otelHandler := otelhttp.NewHandler(http.HandlerFunc(forecastHandler), "forecast")
-	http.Handle("/forecast", otelHandler)
+	handler := http.Handler(http.HandlerFunc(forecastHandler))
+	http.Handle("/forecast", handler)
 
 	port := os.Getenv("FORECAST_PORT")
 	if port == "" {

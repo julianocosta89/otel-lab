@@ -13,8 +13,6 @@ services:
       - WEATHER_PORT=8080
       - FORECAST_URL=http://forecast:9090/forecast?
       - COORDINATES_SERVICE_URL=https://nominatim.openstreetmap.org/search?format=json&q=
-      #- OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
-      - OTEL_PYTHON_LOG_CORRELATION=true
       - OTEL_SERVICE_NAME=weather
       - POSTGRES_HOST=coordinates-db
       - POSTGRES_PORT=5432
@@ -29,8 +27,6 @@ services:
       - 9090
     environment:
       - FORECAST_PORT=9090
-      #- OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
-      - OTEL_SERVICE_NAME=forecast
 
   coordinates-db:
     image: postgres:17.2-alpine3.21
@@ -57,15 +53,6 @@ services:
     ports:
       - 4317 # OTLP gRPC
       - 4318 # OTLP HTTP
-    environment:
-      - OTEL_COLLECTOR_HOST=otel-collector
-      - OTEL_COLLECTOR_PORT_GRPC=4317
-      - OTEL_COLLECTOR_PORT_HTTP=4318
-      - POSTGRES_HOST=coordinates-db
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=postgres
-      - POSTGRES_PWD=password
-      - POSTGRES_DB=coordinates
     depends_on:
       aspire-dashboard:
         condition: service_started

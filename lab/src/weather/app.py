@@ -2,7 +2,6 @@
 
 from flask import Flask, render_template
 from markupsafe import escape
-from opentelemetry import trace
 import requests
 import waitress
 
@@ -27,12 +26,6 @@ def get_weather(location, country):
     return render_template("error.html", message="Location and Country are required"), 400
   
   logger.info("Received request to get weather data", extra={"location": location, "country": country})
-
-  current_span = trace.get_current_span()
-  current_span.set_attributes({
-    "app.city": location,
-    "app.country": country
-  })
 
   # Check if coordinates are already in the database
   coordinates = get_coordinates_from_db(location, country)
@@ -98,13 +91,10 @@ def get_coordinates_from_coordinates_service(location, country):
 
 
 def convert_daylight_duration(daylight_duration):
-  with tracer.start_as_current_span("convert_daylight") as span:
-    span.set_attribute("daylight_duration", daylight_duration)
-    hours = int(daylight_duration // 3600)
-    minutes = int ((daylight_duration % 3600) // 60)
+  hours = int(daylight_duration // 3600)
+  minutes = int ((daylight_duration % 3600) // 60)
 
-    span.set_status(trace.Status(trace.StatusCode.OK))
-    return f"{hours}h {minutes}min"
+  return f"{hours}h {minutes}min"
 
 
 @app.route("/weather/coordinates/<latitude>/<longitude>", methods=["GET"])
@@ -134,7 +124,6 @@ def get_weather_by_coordinates(latitude, longitude):
 
 if __name__ == "__main__":
   service_name = os.getenv("OTEL_SERVICE_NAME")
-  tracer = trace.get_tracer_provider().get_tracer(service_name)
 
   logger = initLogger(service_name)
   logger.info(f"Starting weather service on port {WEATHER_PORT}")

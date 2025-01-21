@@ -25,10 +25,13 @@ step.
     from the service.
 
 1. Now that we have the required dependencies we can navigate to the
-[Dockerfile](Dockerfile#L33) and modify the `ENTRYPOINT` to call the
-`opentelemetry-instrument` when starting the Weather service.
+[Dockerfile](Dockerfile#L33) and modify the `runtime` stage to run the
+`opentelemetry-bootstrap` install and call `opentelemetry-instrument` when
+starting the Weather service.
 
     ```dockerfile
+    RUN opentelemetry-bootstrap -a install
+
     ENTRYPOINT [ "opentelemetry-instrument", "python", "app.py" ]
     ```
 

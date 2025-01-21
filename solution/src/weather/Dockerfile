@@ -27,7 +27,7 @@ WORKDIR /usr/src/app/
 COPY --from=builder /reqs /usr/local
 COPY ./ ./
 
-RUN opentelemetry-bootstrap -a install
+EXPOSE ${WEATHER_PORT}
 
-EXPOSE 8080
+RUN opentelemetry-bootstrap -a install
 ENTRYPOINT [ "opentelemetry-instrument", "python", "app.py" ]
