@@ -201,8 +201,9 @@ Let's add the `transform` processor to the Collector configuration:
     processors: [transform, batch]
     ```
 
-    > As the Collector is only fetching metrics from the postgres service, we will only apply the `transform`
-    to the metrics pipeline.
+> [!NOTE]
+> As the Collector is only fetching metrics from the postgres service, we will only apply the `transform`
+to the metrics pipeline.
 
 ### Rerunning the application
 
