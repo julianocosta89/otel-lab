@@ -65,10 +65,6 @@ configuration found in the receivers, processors, exporters, and extensions sect
     - To export data in the `OTLP` format and also have some log entries to every time something is exported,
     we can use the `otlp` and `debug` exporters.
 
-      > [!NOTE]
-      > As `otlp` is used to export data to Aspire and Jaeger, we need to add an alias to it, as we need 
-      to configure it twice.
-
       ```yaml
       debug: {}
       otlp:
@@ -80,6 +76,10 @@ configuration found in the receivers, processors, exporters, and extensions sect
         tls:
           insecure: true
       ```
+
+> [!NOTE]
+> As `otlp` is used to export data to Aspire and Jaeger, we need to add an alias to it, as we need 
+to configure it twice.
 
 1. Configuring the `service`:
     - Up until now we have just defined the components our Collector will use, but they are not enabled yet.
@@ -101,11 +101,11 @@ configuration found in the receivers, processors, exporters, and extensions sect
           exporters: [debug, otlp]  
       ```
 
-      > [!NOTE]
-      > As Jaeger only supports Traces, we are just using it on the `exporters` for the Traces pipeline.
-      >
-      > Another point to highlight is the `spanmetrics` connector. Connectors join two pipelines by using
-      the end of one pipeline as an exporter, while acting as a receiver for the start of a second pipeline.
+> [!NOTE]
+> As Jaeger only supports Traces, we are just using it on the `exporters` for the Traces pipeline.
+>
+> Another point to highlight is the `spanmetrics` connector. Connectors join two pipelines by using
+the end of one pipeline as an exporter, while acting as a receiver for the start of a second pipeline.
 
 ## Configuring the `compose.yaml` file
 
@@ -115,17 +115,17 @@ components will have all data they need to startup, we need to pass those enviro
 
 1. Navigate to [../../compose.yaml](../../compose.yaml#L50) and add the following environment variables:
 
-  ```yaml
-  environment:
-    - OTEL_COLLECTOR_HOST=otel-collector
-    - OTEL_COLLECTOR_PORT_GRPC=4317
-    - OTEL_COLLECTOR_PORT_HTTP=4318
-    - POSTGRES_HOST=coordinates-db
-    - POSTGRES_PORT=5432
-    - POSTGRES_USER=postgres
-    - POSTGRES_PWD=password
-    - POSTGRES_DB=coordinates
-  ```
+    ```yaml
+    environment:
+      - OTEL_COLLECTOR_HOST=otel-collector
+      - OTEL_COLLECTOR_PORT_GRPC=4317
+      - OTEL_COLLECTOR_PORT_HTTP=4318
+      - POSTGRES_HOST=coordinates-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PWD=password
+      - POSTGRES_DB=coordinates
+    ```
 
 ## Starting the application
 
