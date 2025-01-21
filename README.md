@@ -5,7 +5,7 @@ This lab was created to demonstrate OpenTelemetry.
 The [lab](lab) folder contains the blueprint of all services, as well as an empty
 configuration of the OpenTelemetry Collector.
 
-It also contains a step-by-step README that will guide you through the instrumentation
+It also contains a step-by-step `README` that will guide you through the instrumentation
 and configuration process.
 
 The [solution](solution) folder contains the final state of the lab, with all services
@@ -19,7 +19,7 @@ The Lab contains an application composed by 2 services, plus a Postgres database
   - The service exposes 2 endpoints:
     - `/weather/<location>/<country>`
       - eg: <http://localhost:8080/weather/Linz/Austria>
-    - `/weather/<latitude>/<longitude>`
+    - `/weather/coordinates/<latitude>/<longitude>`
       - eg: <http://localhost:8080/weather/coordinates/48.3059078/14.286198>
 - Forecast (Go) - Receives a call from `Weather` and returns the forecast for
 the requested location.
