@@ -77,9 +77,9 @@ configuration found in the receivers, processors, exporters, and extensions sect
           insecure: true
       ```
 
-> [!NOTE]
-> As `otlp` is used to export data to Aspire and Jaeger, we need to add an alias to it, as we need 
-to configure it twice.
+  > [!NOTE]
+  > As `otlp` is used to export data to Aspire and Jaeger, we need to add an alias to it, as we need 
+  to configure it twice.
 
 1. Configuring the `service`:
     - Up until now we have just defined the components our Collector will use, but they are not enabled yet.
@@ -101,11 +101,11 @@ to configure it twice.
           exporters: [debug, otlp]  
       ```
 
-> [!NOTE]
-> As Jaeger only supports Traces, we are just using it on the `exporters` for the Traces pipeline.
->
-> Another point to highlight is the `spanmetrics` connector. Connectors join two pipelines by using
-the end of one pipeline as an exporter, while acting as a receiver for the start of a second pipeline.
+  > [!NOTE]
+  > As Jaeger only supports Traces, we are just using it on the `exporters` for the Traces pipeline.
+  >
+  > Another point to highlight is the `spanmetrics` connector. Connectors join two pipelines by using
+  the end of one pipeline as an exporter, while acting as a receiver for the start of a second pipeline.
 
 ## Configuring the `compose.yaml` file
 
