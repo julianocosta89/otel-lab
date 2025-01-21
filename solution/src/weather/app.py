@@ -136,6 +136,6 @@ if __name__ == "__main__":
   service_name = os.getenv("OTEL_SERVICE_NAME")
   tracer = trace.get_tracer_provider().get_tracer(service_name)
 
-  logger = initLogger("weather")
+  logger = initLogger(service_name)
   logger.info(f"Starting weather service on port {WEATHER_PORT}")
   waitress.serve(app, host="0.0.0.0", port=WEATHER_PORT)

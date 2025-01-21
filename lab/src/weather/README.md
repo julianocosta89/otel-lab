@@ -142,8 +142,81 @@ and check the received logs in Aspire at <http://localhost:18888/structuredlogs>
 ## Extra configuration
 
 Usually the out-of-the-box instrumentation gives us general visibility into the services, but it
-lacks contextual and application specific data.
+lacks contextual and business specific data.
 
 To solve that we can take advantage of manual instrumentation.
 
 With manual instrumentation, we can create metrics, add more context to spans, create new spans and so on.
+
+`opentelemetry-distro` already brings all dependencies we need to add manual instrumentation
+to the weather service.
+
+1. Open the [app.py](app.py) file, and add the following import:
+
+    ```python
+    from opentelemetry import trace
+    ```
+
+1. In the `main` function add the initialization of `tracer`:
+
+    ```python
+    if __name__ == "__main__":
+        service_name = os.getenv("OTEL_SERVICE_NAME")
+        tracer = trace.get_tracer_provider().get_tracer(service_name)
+    ```
+
+    Tracer is responsible for creating spans.
+
+1. Now that we have a `tracer`, we can use it to create or modify spans. Let's add some
+context to the span which is created when `/weather/<location>/<country>` is called:
+
+    ```python
+    current_span = trace.get_current_span()
+    current_span.set_attributes({
+        "app.city": location,
+        "app.country": country
+    })
+    ```
+
+    `current_span` gets the automatically created span and adds two attributes to it.
+
+1. Let's say we want to keep track of how much time `convert_daylight_duration` is taking to
+do its conversion. We can create a new span whenever this function is called:
+
+    ```python
+    def convert_daylight_duration(daylight_duration):
+    with tracer.start_as_current_span("convert_daylight") as span:
+        span.set_attribute("daylight_duration", daylight_duration)
+        hours = int(daylight_duration // 3600)
+        minutes = int ((daylight_duration % 3600) // 60)
+
+        span.set_status(trace.Status(trace.StatusCode.OK))
+        return f"{hours}h {minutes}min"
+    ```
+
+    `with tracer.start_as_current_span("convert_daylight") as span` will create a span
+    named `convert_daylight` whenever the function is called, the span will have the
+    `daylight_duration` manual attribute, and its status set to `OK`.
+
+1. Let's rebuild and rerun the weather service to see those changes. If you have the application
+still running, you can press `Ctrl+C` to terminate all containers.
+
+1. Once everything stops, you can navigate to the `lab/` folder and run:
+
+    ```sh
+    docker compose build weather
+    ```
+
+1. And, run the application:
+
+    ```sh
+    docker compose up
+    ```
+
+1. With the application running, navigate to the weather page <http://localhost:8080/weather/Guadalajara/Mexico>,
+and check the received trace in Aspire <http://localhost:18888/traces> or Jaeger <http://localhost:16686/>:
+
+    ![Weather Jaeger Manual Trace](../../../resources/images/weather-jaeger_manual_trace.png)
+
+    We can now see the `app.city` and `app.country` attributes in our root span and the extra `convert_daylight`
+    span in our trace.
