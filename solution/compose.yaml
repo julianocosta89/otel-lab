@@ -14,7 +14,6 @@ services:
       - FORECAST_URL=http://forecast:9090/forecast?
       - COORDINATES_SERVICE_URL=https://nominatim.openstreetmap.org/search?format=json&q=
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
-      - OTEL_PYTHON_LOG_CORRELATION=true
       - OTEL_SERVICE_NAME=weather
       - POSTGRES_HOST=coordinates-db
       - POSTGRES_PORT=5432
