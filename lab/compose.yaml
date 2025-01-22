@@ -44,7 +44,7 @@ services:
   ########################
 
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.117.0
+    image: otel/opentelemetry-collector-contrib:0.118.0
     command: 
       - --config=/etc/otel-collector-config.yaml
       - --feature-gates=receiver.postgresql.connectionPool,receiver.postgresql.separateSchemaAttr
