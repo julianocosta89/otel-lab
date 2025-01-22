@@ -13,9 +13,9 @@ instrumented and OpenTelemetry Collector configured.
 
 ## Lab Details
 
-The Lab contains an application composed by 2 services, plus a Postgres database:
+The Lab contains an application composed of 2 services, plus a Postgres database:
 
-- Weather (Python) - User can query the weather for a specific location.
+- Weather (Python) - Users can query the weather for a specific location.
   - The service exposes 2 endpoints:
     - `/weather/<location>/<country>`
       - eg: <http://localhost:8080/weather/Linz/Austria>
@@ -31,13 +31,13 @@ the user.
 It also contains some tools that will help you navigate the data:
 
 - OpenTelemetry Collector (otelcol):
-  - The Collector receives Traces, Metrics and Logs as OTLP data from the `weather`
-  and `forecast` services as well as, queries the [PostgreSQL statistics collector][1].
-  - It process the data and exports it as OTLP data to Jaeger (Traces) and Aspire
-  (Traces, Metrics and Logs).
-- Jaeger is used to receive and visualize Traces:
+  - The Collector receives traces, metrics, and logs as OTLP data from the `weather`
+  and `forecast` services, as well as queries the [PostgreSQL statistics collector][1].
+  - It processes the data and exports it as OTLP data to Jaeger (traces) and Aspire
+  (traces, metrics, and logs).
+- Jaeger is used to receive and visualize traces:
   - Accessible at: <http://localhost:16686/>
-- Aspire Dashboard is used to receive and visualize Traces, Metrics and Logs:
+- Aspire Dashboard is used to receive and visualize traces, metrics, and logs:
   - Accessible at: <http://localhost:18888/>
 
 ## Lab Diagram
