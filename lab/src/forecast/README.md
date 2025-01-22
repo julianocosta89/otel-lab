@@ -1,13 +1,13 @@
 # Forecast Service Instrumentation
 
 The Forecast service is written in Go. In this section, we will
-add everything needed to instrument it and obtain Traces, Metrics, and Logs
+add everything needed to instrument it and obtain traces, metrics, and logs
 in the OTLP format, which will be sent to the OTel Collector configured in
 the previous step.
 
 ## Adding dependencies
 
-1. Navigate to the [go.mod](go.mod) file and add the following:
+1. Navigate to the [go.mod](go.mod) file and add the following dependencies:
 
     ```golang
     go.opentelemetry.io/contrib/bridges/otellogrus v0.8.0
@@ -23,7 +23,7 @@ the previous step.
     go.opentelemetry.io/otel/sdk/metric v1.33.0
     ```
 
-1. Create a file named `initOtel.go` and paste the following content to it:
+1. Create a file named `initOtel.go` and paste the following content into it:
 
     ```golang
     package main
@@ -159,18 +159,16 @@ the previous step.
     }
     ```
 
-    > Currently there are two proposals for donating a compile-time instrumentation
-    for golang.
+    > Currently, there are two proposals for donating compile-time instrumentation for Go:
     - [Alibaba proposal](https://github.com/open-telemetry/community/issues/2344)
     - [Datadog proposal](https://github.com/open-telemetry/community/issues/2497)
 
-    The maintainers from both projects are working together to bring the best of both
-    proposals together and ship it to the OpenTelemetry community.
+    The maintainers from both projects are working together to combine the best aspects of both
+    proposals and deliver them to the OpenTelemetry community.
 
-    This will improve the experience and reduce all the boilerplate code required to
-    setup OTel in Golang.
+    This will improve the experience and reduce the boilerplate code required to set up OTel in Go.
 
-1. With the OTel SDK setup configured, let's navigate to [main.go](main.go) and
+1. With the OTel SDK setup configured, navigate to [main.go](main.go) and
 import all required dependencies:
 
     ```golang
@@ -229,15 +227,15 @@ import all required dependencies:
     }
     ```
 
-    > Note that we are modifying a couple of things here besides calling `setupOTelSDK`.
-    - `runtime.Start` will collect Golang runtime metrics from the service.
-    - We also replace the handler to a `otelhttp` handler which automatically instruments
+    > Note that we are modifying a couple of things here besides calling `setupOTelSDK`:
+    - `runtime.Start` will collect Go runtime metrics from the service.
+    - We also replace the handler with an `otelhttp` handler which automatically instruments
     incoming requests.
 
-    This step instruments the server side of the service, configure it to collect runtime
-    metrics and starts the OTel SDK which will take care of exporting the collected data.
+    This step instruments the server side of the service, configures it to collect runtime
+    metrics, and starts the OTel SDK which will take care of exporting the collected data.
 
-1. In the function `getForecast` we also have a client side of the forecast service.
+1. In the function `getForecast`, we also have a client side of the forecast service.
 Let's take advantage of the available instrumentation library to also instrument it.
 Replace the `client` creation with the following:
 
@@ -256,11 +254,11 @@ environment variables to the forecast service:
     - OTEL_SERVICE_NAME=forecast
     ```
 
-    This is telling to the OTel SDK that the OTLP data should be sent to
+    This tells the OTel SDK that the OTLP data should be sent to
     `http://otel-collector:4317`, which is the `gRPC` endpoint of the OTel Collector.
 
     It also defines the service name, so all data produced by this service will have
-    `forecast` as name.
+    `forecast` as its name.
 
 ## Building the service
 
@@ -305,10 +303,10 @@ the received logs at <http://localhost:18888/structuredlogs/>:
 
 ## Extra configuration
 
-Server and Client instrumentation are a great start, but again, this doesn't gives us
-contextual and business insights of our service.
+Server and client instrumentation are a great start, but again, this doesn't give us
+contextual and business insights into our service.
 
-Let's use one more time manual instrumentation, to add more context and create new spans.
+Let's use manual instrumentation one more time to add more context and create new spans.
 
 1. Add the following imports in the [main.go](main.go) file:
 

@@ -1,9 +1,9 @@
 # Weather Service Instrumentation
 
-The Weather service is written in Python and in this section we will
-add everything we need to instrument it and get Traces, Metrics and Logs
-in the OTLP format sent to the OTel Collector we configured in the previous
-step.
+The Weather service is written in Python. In this section, we will
+add everything needed to instrument it and obtain traces, metrics, and logs
+in the OTLP format, which will be sent to the OTel Collector configured
+in the previous step.
 
 ## Adding dependencies
 
@@ -16,15 +16,15 @@ step.
     ```
 
     OpenTelemetry distro provides a mechanism to automatically configure some of the more
-    common options for users. And in our case, it helps bootstrap the whole instrumentation.
+    common options for users. In our case, it helps bootstrap the whole instrumentation.
 
     We are also using the `opentelemetry-exporter-otlp-proto-grpc` to export the collected
     data in `OTLP` format via `gRPC`.
 
-    When `psutil` is used together with the `distro` it gets the system metrics
+    When `psutil` is used together with the `distro`, it gets the system metrics
     from the service.
 
-1. Now that we have the required dependencies we can navigate to the
+1. Now that we have the required dependencies, we can navigate to the
 [Dockerfile](Dockerfile#L33) and modify the `runtime` stage to run the
 `opentelemetry-bootstrap` install and call `opentelemetry-instrument` when
 starting the Weather service.
@@ -39,18 +39,18 @@ starting the Weather service.
     need to define where to send the data.
 
 1. Navigate to the [../../compose.yaml](../../compose.yaml) file and add the following
-environment variable to the weather service:
+environment variables to the weather service:
 
     ```yaml
     - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
     - OTEL_SERVICE_NAME=weather
     ```
 
-    This is telling to the OTel SDK configured by the distro that the OTLP data should be
-    sent to `http://otel-collector:4317`, which is the `gRPC` endpoint of the OTel Collector.
+    This tells the OTel SDK configured by the distro that the OTLP data should be sent to
+    `http://otel-collector:4317`, which is the `gRPC` endpoint of the OTel Collector.
 
     It also defines the service name, so all data produced by this service will have `weather`
-    as name.
+    as its name.
 
 ## Building the service
 

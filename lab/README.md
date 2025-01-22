@@ -5,7 +5,7 @@ into your services using OpenTelemetry.
 
 ## The OpenTelemetry Collector
 
-First, let's configure thr OpenTelemetry Collector to receive, process and export
+First, let's configure the OpenTelemetry Collector to receive, process, and export
 telemetry data.
 
 Follow the instructions on [src/otel-collector/README.md](src/otel-collector/README.md).
@@ -14,7 +14,7 @@ Follow the instructions on [src/otel-collector/README.md](src/otel-collector/REA
 
 Now let's instrument the `weather` service.
 
-The service is written in Python and it's the entrypoint of our application.
+The service is written in Python and it's the entry point of our application.
 
 Follow the instructions on [src/weather/README.md](src/weather/README.md) to add
 OpenTelemetry to the service.
@@ -22,7 +22,7 @@ OpenTelemetry to the service.
 ## Instrumenting Forecast Service
 
 We know that the `forecast` service is being called by the `weather` service, but up till
-now this service is a black box to us.
+now, this service is a black box to us.
 
 Let's add OpenTelemetry to the service and get some visibility into what this service is
 doing.

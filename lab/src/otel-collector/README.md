@@ -1,17 +1,16 @@
 # OpenTelemetry Collector Configuration
 
-In the file [otel-collector-config.yaml](otel-collector-config.yaml).
-
-You will notice that there are 5 sections:
+In the file [otel-collector-config.yaml](otel-collector-config.yaml), you will notice that there
+are 5 sections:
 
 - `receivers`: collect telemetry from one or more sources.
 - `processors`: take the data collected by receivers and modify or transform it before sending
 it to the exporters.
-- `connectors`: consumes data as an exporter at the end of one pipeline and emits data as a receiver at the
-beginning of another pipeline.
+- `connectors`: consume data as an exporter at the end of one pipeline and emit data as a
+receiver at the beginning of another pipeline.
 - `exporters`: send data to one or more backends or destinations.
-- `service`: is used to configure what components are enabled in the Collector based on the
-configuration found in the receivers, processors, exporters, and extensions sections
+- `service`: configure what components are enabled in the Collector based on the
+configuration found in the receivers, processors, exporters, and extensions sections.
 
 ## Configuring each component
 
@@ -77,8 +76,7 @@ configuration found in the receivers, processors, exporters, and extensions sect
           insecure: true
       ```
 
-      > **As `otlp` is used to export data to Aspire and Jaeger, to be able to configure it twice, we need to add
-      an alias to it.**
+      > **As `otlp` is used to export data to Aspire and Jaeger, we need to add an alias to configure it twice.**
 
 1. Configuring the `service`:
     - Up until now we have just defined the components our Collector will use, but they are not enabled yet.
