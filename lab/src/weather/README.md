@@ -188,13 +188,13 @@ do its conversion. We can create a new span whenever this function is called:
 
     ```python
     def convert_daylight_duration(daylight_duration):
-    with tracer.start_as_current_span("convert_daylight") as span:
-        span.set_attribute("daylight_duration", daylight_duration)
-        hours = int(daylight_duration // 3600)
-        minutes = int ((daylight_duration % 3600) // 60)
+        with tracer.start_as_current_span("convert_daylight") as span:
+            span.set_attribute("daylight_duration", daylight_duration)
+            hours = int(daylight_duration // 3600)
+            minutes = int ((daylight_duration % 3600) // 60)
 
-        span.set_status(trace.Status(trace.StatusCode.OK))
-        return f"{hours}h {minutes}min"
+            span.set_status(trace.Status(trace.StatusCode.OK))
+            return f"{hours}h {minutes}min"
     ```
 
     `with tracer.start_as_current_span("convert_daylight") as span` will create a span
