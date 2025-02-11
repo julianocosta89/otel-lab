@@ -1,0 +1,64 @@
+extensions:
+  file_storage: {}
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: ${env:OTEL_COLLECTOR_HOST}:${env:OTEL_COLLECTOR_PORT_GRPC}
+      http:
+        endpoint: ${env:OTEL_COLLECTOR_HOST}:${env:OTEL_COLLECTOR_PORT_HTTP}
+  postgresql:
+    endpoint: ${env:POSTGRES_HOST}:${env:POSTGRES_PORT}
+    username: ${env:POSTGRES_USER}
+    password: ${env:POSTGRES_PWD}
+    databases:
+      - ${env:POSTGRES_DB}
+    tls:
+      insecure: true
+
+processors:
+  batch:
+    timeout: 30s
+  transform:
+    error_mode: ignore
+    metric_statements:
+      - context: scope
+        conditions:
+          - name == "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/postgresqlreceiver"
+        statements:
+          - set(resource.attributes["service.name"], "${env:POSTGRES_DB}")
+
+connectors:
+  spanmetrics: {}
+
+exporters:
+  debug: {}
+  otlp:
+    endpoint: "aspire-dashboard:18889"
+    tls:
+      insecure: true
+    sending_queue:
+      storage: file_storage
+  otlp/jaeger:
+    endpoint: "jaeger:4317"
+    tls:
+      insecure: true
+    sending_queue:
+      storage: file_storage
+
+service:
+  extensions: [file_storage]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug, otlp, otlp/jaeger, spanmetrics]
+    metrics:
+      receivers: [otlp, postgresql, spanmetrics]
+      processors: [transform, batch]
+      exporters: [debug, otlp]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug, otlp]

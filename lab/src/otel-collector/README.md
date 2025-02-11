@@ -220,7 +220,6 @@ Now, when navigating to the Aspire Dashboard, you should see a Resource called: 
 ## Final file
 
 <!-- markdownlint-disable MD033 -->
-<br>
 <details>
   <summary>
     <b>Click here for the completed</b> <code>otel-collector-config.yaml</code>:
@@ -286,3 +285,69 @@ service:
 ```
 
 </details>
+
+## Visualization
+
+At this moment, this is how our Collector looks like:
+
+```mermaid
+flowchart
+    classDef receivers fill:#196ef7,color:white;
+    classDef processors fill:#4ab52f,color:white;
+    classDef connectors fill:#404347,color:white;
+    classDef exporters fill:#ffd500,color:black;
+
+    subgraph Service Legend
+    Receivers:::receivers
+    Processors:::processors
+    Exporters:::exporters
+    end
+
+    subgraph Service Pipeline
+        subgraph Traces
+        OTLP:::receivers
+        batch:::processors
+        debug:::exporters
+        otlp:::exporters
+        otlp/jaeger:::exporters
+        spanmetrics:::exporters
+
+        OTLP --> batch
+
+        batch --> spanmetrics
+        batch --> debug
+        batch --> otlp
+        batch --> otlp/jaeger
+        end
+
+        subgraph Logs
+        direction LR
+        OTLPl[OTLP]:::receivers
+        batchl[batch]:::processors
+        debugl[debug]:::exporters
+        otlpl[otlp]:::exporters
+
+        OTLPl --> batchl
+        batchl --> debugl
+        batchl --> otlpl
+        end
+
+        subgraph Metrics
+        OTLPm[OTLP]:::receivers
+        postgresql:::receivers
+        spanmetricsm[spanmetrics]:::receivers
+        batchm[batch]:::processors
+        transform:::processors
+        debugm[debug]:::exporters
+        otlpm[otlp]:::exporters
+
+        spanmetrics --> spanmetricsm --> transform
+        OTLPm --> transform
+        postgresql --> transform
+        transform --> batchm
+
+        batchm --> debugm
+        batchm --> otlpm
+        end
+    end
+```

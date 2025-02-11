@@ -11,6 +11,12 @@ and configuration process.
 The [solution](solution) folder contains the final state of the lab, with all services
 instrumented and OpenTelemetry Collector configured.
 
+If you would like to run the solution, you can run the following command from the solution folder:
+
+```shell
+docker compose up
+```
+
 ## Lab Details
 
 The Lab contains an application composed of 2 services, plus a Postgres database:
