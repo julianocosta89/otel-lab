@@ -40,25 +40,31 @@ exporters:
       insecure: true
     sending_queue:
       storage: file_storage
+    batcher:
+      enabled: true
+      flush_timeout: 30s
   otlp/jaeger:
     endpoint: "jaeger:4317"
     tls:
       insecure: true
     sending_queue:
       storage: file_storage
+    batcher:
+      enabled: true
+      flush_timeout: 30s
 
 service:
   extensions: [file_storage]
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [batch]
+      processors: []
       exporters: [debug, otlp, otlp/jaeger, spanmetrics]
     metrics:
       receivers: [otlp, postgresql, spanmetrics]
-      processors: [transform, batch]
+      processors: [transform]
       exporters: [debug, otlp]
     logs:
       receivers: [otlp]
-      processors: [batch]
+      processors: []
       exporters: [debug, otlp]

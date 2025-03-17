@@ -47,7 +47,7 @@ services:
   ########################
 
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.118.0
+    image: otel/opentelemetry-collector-contrib:0.121.0
     command: 
       - --config=/etc/otel-collector-config.yaml
       - --feature-gates=receiver.postgresql.connectionPool,receiver.postgresql.separateSchemaAttr
@@ -81,7 +81,8 @@ services:
       - 4318        # OTLP HTTP endpoint
 
   aspire-dashboard:
-    image: mcr.microsoft.com/dotnet/aspire-dashboard:9.0
+    image: mcr.microsoft.com/dotnet/nightly/aspire-dashboard:9.1-preview
+    #image: mcr.microsoft.com/dotnet/aspire-dashboard:9.0
     ports:
       - 18888:18888
       - 18889      # Aspire OTLP/gRPC
